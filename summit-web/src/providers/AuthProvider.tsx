@@ -1,9 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import type { User, AuthResponse } from "@/lib/types";
-import { api } from "@/lib/api";
+import { createContext, useContext } from "react";
+import type { User } from "@/lib/types";
 
 interface AuthContextType {
   user: User | null;
@@ -14,59 +12,32 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+const defaultUser: User = {
+  id: 0,
+  email: "admin@summit.com",
+  role: "admin",
+  is_active: true,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
-  }, []);
-
-  const login = async (email: string, password: string) => {
-    const response = await api.post<AuthResponse>("/api/v1/auth/login", {
-      email,
-      password,
-    });
-    localStorage.setItem("token", response.token);
-    localStorage.setItem("user", JSON.stringify(response.user));
-    setToken(response.token);
-    setUser(response.user);
-    router.push("/customers");
-  };
-
-  const register = async (email: string, password: string) => {
-    const response = await api.post<AuthResponse>("/api/v1/auth/register", {
-      email,
-      password,
-    });
-    localStorage.setItem("token", response.token);
-    localStorage.setItem("user", JSON.stringify(response.user));
-    setToken(response.token);
-    setUser(response.user);
-    router.push("/customers");
-  };
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setToken(null);
-    setUser(null);
-    router.push("/login");
-  };
+  const login = async () => {};
+  const register = async () => {};
+  const logout = () => {};
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, register, logout, isLoading }}
+      value={{
+        user: defaultUser,
+        token: "skip-auth",
+        login,
+        register,
+        logout,
+        isLoading: false,
+      }}
     >
       {children}
     </AuthContext.Provider>
