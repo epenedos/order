@@ -18,7 +18,7 @@ func New(h *handler.Handlers, cfg *config.Config) http.Handler {
 	r.Use(chimw.RequestID)
 	r.Use(middleware.Logging)
 	r.Use(middleware.Recoverer)
-	r.Use(cors.Handler(middleware.CORS()))
+	r.Use(cors.Handler(middleware.CORS(cfg.CORSOrigins)))
 
 	// Health check
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

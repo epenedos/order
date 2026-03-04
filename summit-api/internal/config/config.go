@@ -9,6 +9,7 @@ type Config struct {
 	Port        string
 	DatabaseURL string
 	JWTSecret   string
+	CORSOrigins string
 }
 
 func Load() (*Config, error) {
@@ -16,6 +17,7 @@ func Load() (*Config, error) {
 		Port:        getEnv("PORT", "8080"),
 		DatabaseURL: getEnv("DATABASE_URL", "postgres://summit:summit_dev@localhost:5432/summit?sslmode=disable"),
 		JWTSecret:   getEnv("JWT_SECRET", ""),
+		CORSOrigins: getEnv("CORS_ORIGINS", "*"),
 	}
 
 	if cfg.JWTSecret == "" {
