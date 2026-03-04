@@ -32,12 +32,7 @@ class ApiClient {
     });
 
     if (response.status === 401) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        window.location.href = "/login";
-      }
-      throw new Error("Session expired. Please log in again.");
+      throw new Error("Unauthorized request.");
     }
 
     if (!response.ok) {
