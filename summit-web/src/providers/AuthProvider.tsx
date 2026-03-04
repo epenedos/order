@@ -15,6 +15,7 @@ interface AuthContextType {
 const defaultUser: User = {
   id: 0,
   email: "admin@summit.com",
+  employee_id: null,
   role: "admin",
   is_active: true,
   created_at: new Date().toISOString(),
