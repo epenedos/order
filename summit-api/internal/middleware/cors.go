@@ -1,12 +1,22 @@
 package middleware
 
 import (
+	"strings"
+
 	"github.com/go-chi/cors"
 )
 
-func CORS() cors.Options {
+func CORS(allowedOrigins string) cors.Options {
+	origins := []string{"*"}
+	if allowedOrigins != "" && allowedOrigins != "*" {
+		origins = strings.Split(allowedOrigins, ",")
+		for i := range origins {
+			origins[i] = strings.TrimSpace(origins[i])
+		}
+	}
+
 	return cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   origins,
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
