@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { AuthGuard } from "@/components/shared/AuthGuard";
 import { api } from "@/lib/api";
 import type { Inventory } from "@/lib/types";
 
@@ -14,6 +15,7 @@ export default function InventoryPage() {
   });
 
   return (
+    <AuthGuard>
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
@@ -51,5 +53,6 @@ export default function InventoryPage() {
         </main>
       </div>
     </div>
+    </AuthGuard>
   );
 }

@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { DataTable } from "@/components/shared/DataTable";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { AuthGuard } from "@/components/shared/AuthGuard";
 import { useOrders } from "@/hooks/useOrders";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Order } from "@/lib/types";
@@ -37,6 +38,7 @@ export default function OrdersPage() {
   const { data, isLoading } = useOrders({ limit: 50 });
 
   return (
+    <AuthGuard>
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
@@ -55,5 +57,6 @@ export default function OrdersPage() {
         </main>
       </div>
     </div>
+    </AuthGuard>
   );
 }

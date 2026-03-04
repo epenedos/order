@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { AuthGuard } from "@/components/shared/AuthGuard";
 import { useProducts } from "@/hooks/useProducts";
 import { formatCurrency } from "@/lib/utils";
 
@@ -15,6 +16,7 @@ export default function ProductsPage() {
   const { data, isLoading } = useProducts({ search });
 
   return (
+    <AuthGuard>
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col">
@@ -62,5 +64,6 @@ export default function ProductsPage() {
         </main>
       </div>
     </div>
+    </AuthGuard>
   );
 }

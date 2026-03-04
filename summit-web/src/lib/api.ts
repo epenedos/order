@@ -31,6 +31,15 @@ class ApiClient {
       headers,
     });
 
+    if (response.status === 401) {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
+      throw new Error("Session expired. Please log in again.");
+    }
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({
         message: "An error occurred",
