@@ -26,10 +26,22 @@ export const customerSchema = z.object({
 });
 
 export const orderSchema = z.object({
-  customer_id: z.number({ required_error: "Customer is required" }),
-  date_ordered: z.string().optional(),
-  sales_rep_id: z.number().optional(),
-  payment_type: z.enum(["CASH", "CREDIT"]).optional(),
+  customer_id: z.preprocess(
+    (val) => (Number.isNaN(val) ? undefined : val),
+    z.number({ required_error: "Customer is required" })
+  ),
+  date_ordered: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val : undefined)),
+  sales_rep_id: z.preprocess(
+    (val) => (Number.isNaN(val) ? undefined : val),
+    z.number().optional()
+  ),
+  payment_type: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.enum(["CASH", "CREDIT"]).optional()
+  ),
 });
 
 export const orderItemSchema = z.object({
@@ -38,10 +50,22 @@ export const orderItemSchema = z.object({
 });
 
 export const updateOrderSchema = z.object({
-  date_ordered: z.string().optional(),
-  date_shipped: z.string().optional(),
-  sales_rep_id: z.number().optional(),
-  payment_type: z.enum(["CASH", "CREDIT"]).optional(),
+  date_ordered: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val : undefined)),
+  date_shipped: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val : undefined)),
+  sales_rep_id: z.preprocess(
+    (val) => (Number.isNaN(val) ? undefined : val),
+    z.number().optional()
+  ),
+  payment_type: z.preprocess(
+    (val) => (val === "" ? undefined : val),
+    z.enum(["CASH", "CREDIT"]).optional()
+  ),
   order_filled: z.boolean().optional(),
 });
 
