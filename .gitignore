@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+summit-web/node_modules/
+summit-api/vendor/
+
+# Next.js build output
+summit-web/.next/
+summit-web/out/
+
+# Next.js generated files
+summit-web/next-env.d.ts
+
+# Package lock (generated)
+summit-web/package-lock.json
+
+# Go build output
+summit-api/bin/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
