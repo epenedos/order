@@ -12,7 +12,7 @@ import {
 import { useCreateOrder, useUpdateOrder } from "@/hooks/useOrders";
 import { useCustomers } from "@/hooks/useCustomers";
 import { useSalesReps } from "@/hooks/useEmployees";
-import type { Order } from "@/lib/types";
+import type { Order, CreateOrderRequest, UpdateOrderRequest } from "@/lib/types";
 
 interface OrderFormProps {
   open: boolean;
@@ -63,13 +63,33 @@ export function OrderForm({ open, onClose, order, onCreated }: OrderFormProps) {
   if (!open) return null;
 
   const onCreateSubmit = async (data: OrderFormData) => {
-    const result = await createOrder.mutateAsync(data);
+    const payload: CreateOrderRequest = {
+      customer_id: data.customer_id,
+      ...(data.date_ordered
+        ? { date_ordered: data.date_ordered + "T00:00:00Z" }
+        : {}),
+      ...(data.payment_type ? { payment_type: data.payment_type } : {}),
+    };
+    const result = await createOrder.mutateAsync(payload);
     onCreated?.(result);
     onClose();
   };
 
   const onEditSubmit = async (data: UpdateOrderFormData) => {
-    await updateOrder.mutateAsync(data);
+    const payload: UpdateOrderRequest = {
+      ...(data.date_ordered
+        ? { date_ordered: data.date_ordered + "T00:00:00Z" }
+        : {}),
+      ...(data.date_shipped
+        ? { date_shipped: data.date_shipped + "T00:00:00Z" }
+        : {}),
+      ...(data.payment_type ? { payment_type: data.payment_type } : {}),
+      ...(data.sales_rep_id ? { sales_rep_id: data.sales_rep_id } : {}),
+      ...(data.order_filled !== undefined
+        ? { order_filled: data.order_filled }
+        : {}),
+    };
+    await updateOrder.mutateAsync(payload);
     onClose();
   };
 
