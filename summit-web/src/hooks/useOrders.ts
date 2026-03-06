@@ -6,6 +6,8 @@ import type {
   PagedResponse,
   CreateOrderRequest,
   CreateOrderItemRequest,
+  UpdateOrderRequest,
+  UpdateOrderItemRequest,
 } from "@/lib/types";
 
 export function useOrders(params?: {
@@ -46,6 +48,18 @@ export function useCreateOrder() {
   });
 }
 
+export function useUpdateOrder(id: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: UpdateOrderRequest) =>
+      api.put<Order>(`/api/v1/orders/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["orders", id] });
+    },
+  });
+}
+
 export function useDeleteOrder() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -67,6 +81,20 @@ export function useAddOrderItem(orderId: number) {
   return useMutation({
     mutationFn: (data: CreateOrderItemRequest) =>
       api.post<OrderItem>(`/api/v1/orders/${orderId}/items`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["orders", orderId, "items"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["orders", orderId] });
+    },
+  });
+}
+
+export function useUpdateOrderItem(orderId: number) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ itemId, data }: { itemId: number; data: UpdateOrderItemRequest }) =>
+      api.put<OrderItem>(`/api/v1/orders/${orderId}/items/${itemId}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["orders", orderId, "items"],

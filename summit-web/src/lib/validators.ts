@@ -37,8 +37,23 @@ export const orderItemSchema = z.object({
   quantity: z.number().min(1, "Quantity must be at least 1"),
 });
 
+export const updateOrderSchema = z.object({
+  date_ordered: z.string().optional(),
+  date_shipped: z.string().optional(),
+  sales_rep_id: z.number().optional(),
+  payment_type: z.enum(["CASH", "CREDIT"]).optional(),
+  order_filled: z.boolean().optional(),
+});
+
+export const updateOrderItemSchema = z.object({
+  quantity: z.number().min(1, "Quantity must be at least 1").optional(),
+  quantity_shipped: z.number().min(0).optional(),
+});
+
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type RegisterFormData = z.infer<typeof registerSchema>;
 export type CustomerFormData = z.infer<typeof customerSchema>;
 export type OrderFormData = z.infer<typeof orderSchema>;
 export type OrderItemFormData = z.infer<typeof orderItemSchema>;
+export type UpdateOrderFormData = z.infer<typeof updateOrderSchema>;
+export type UpdateOrderItemFormData = z.infer<typeof updateOrderItemSchema>;
