@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { DataTable } from "@/components/shared/DataTable";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { AuthGuard } from "@/components/shared/AuthGuard";
+import { OrderForm } from "@/components/orders/OrderForm";
 import { useOrders } from "@/hooks/useOrders";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Order } from "@/lib/types";
@@ -36,6 +39,7 @@ const columns: ColumnDef<Order, unknown>[] = [
 export default function OrdersPage() {
   const router = useRouter();
   const { data, isLoading } = useOrders({ limit: 50 });
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   return (
     <AuthGuard>
@@ -44,7 +48,15 @@ export default function OrdersPage() {
       <div className="flex-1 flex flex-col">
         <Header />
         <main className="flex-1 p-6">
-          <h1 className="text-2xl font-bold mb-4">Orders</h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold">Orders</h1>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" /> New Order
+            </button>
+          </div>
           {isLoading ? (
             <LoadingSpinner />
           ) : (
@@ -54,6 +66,12 @@ export default function OrdersPage() {
               onRowClick={(row) => router.push(`/orders/${row.id}`)}
             />
           )}
+
+          <OrderForm
+            open={showCreateForm}
+            onClose={() => setShowCreateForm(false)}
+            onCreated={(order) => router.push(`/orders/${order.id}`)}
+          />
         </main>
       </div>
     </div>

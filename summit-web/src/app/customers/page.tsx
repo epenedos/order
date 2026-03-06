@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Plus } from "lucide-react";
 import { type ColumnDef } from "@tanstack/react-table";
 import { useCustomers, useCustomerTree } from "@/hooks/useCustomers";
 import { DataTable } from "@/components/shared/DataTable";
 import { TreeView } from "@/components/shared/TreeView";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { CustomerForm } from "@/components/customers/CustomerForm";
 import type { Customer, TreeNode } from "@/lib/types";
 
 const columns: ColumnDef<Customer, unknown>[] = [
@@ -28,6 +30,7 @@ export default function CustomersPage() {
     country?: string;
     sales_rep_id?: number;
   }>({});
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const { data: tree, isLoading: treeLoading } = useCustomerTree(treeMode);
   const { data: customersData, isLoading } = useCustomers({
@@ -97,12 +100,20 @@ export default function CustomersPage() {
       <div className="flex-1">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Customers</h1>
-          <button
-            onClick={() => setFilterParams({})}
-            className="text-sm text-muted-foreground hover:text-foreground"
-          >
-            Clear Filters
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFilterParams({})}
+              className="text-sm text-muted-foreground hover:text-foreground"
+            >
+              Clear Filters
+            </button>
+            <button
+              onClick={() => setShowCreateForm(true)}
+              className="flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4" /> New Customer
+            </button>
+          </div>
         </div>
         {isLoading ? (
           <LoadingSpinner />
@@ -113,6 +124,11 @@ export default function CustomersPage() {
             onRowClick={(row) => router.push(`/customers/${row.id}`)}
           />
         )}
+
+        <CustomerForm
+          open={showCreateForm}
+          onClose={() => setShowCreateForm(false)}
+        />
       </div>
     </div>
   );

@@ -182,3 +182,16 @@ export interface CreateOrderItemRequest {
   product_id: number;
   quantity: number;
 }
+
+export interface UpdateOrderRequest {
+  date_ordered?: string;
+  date_shipped?: string;
+  sales_rep_id?: number;
+  payment_type?: "CASH" | "CREDIT";
+  order_filled?: boolean;
+}
+
+export interface UpdateOrderItemRequest {
+  quantity?: number;
+  quantity_shipped?: number;
+}

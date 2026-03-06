@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Pencil } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { OrderForm } from "@/components/orders/OrderForm";
+import { OrderItemForm } from "@/components/orders/OrderItemForm";
 import { useOrder, useDeleteOrder, useDeleteOrderItem } from "@/hooks/useOrders";
 import { formatDate, formatCurrency } from "@/lib/utils";
+import type { OrderItem } from "@/lib/types";
 
 export default function OrderDetailPage() {
   const params = useParams();
@@ -18,6 +21,9 @@ export default function OrderDetailPage() {
   const deleteOrder = useDeleteOrder();
   const deleteItem = useDeleteOrderItem(id);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showAddItem, setShowAddItem] = useState(false);
+  const [editingItem, setEditingItem] = useState<OrderItem | undefined>();
 
   if (isLoading) {
     return (
@@ -39,6 +45,12 @@ export default function OrderDetailPage() {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">Order #{order.id}</h1>
             <div className="flex gap-2">
+              <button
+                onClick={() => setShowEditForm(true)}
+                className="flex items-center gap-1 px-3 py-2 text-sm border rounded-md hover:bg-gray-50"
+              >
+                <Pencil className="h-4 w-4" /> Edit Order
+              </button>
               <button
                 onClick={() => setShowDeleteConfirm(true)}
                 className="flex items-center gap-1 px-3 py-2 text-sm text-red-600 border border-red-200 rounded-md hover:bg-red-50"
@@ -65,6 +77,12 @@ export default function OrderDetailPage() {
           <div className="border rounded-lg bg-white">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="font-semibold">Line Items</h2>
+              <button
+                onClick={() => setShowAddItem(true)}
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+              >
+                <Plus className="h-4 w-4" /> Add Item
+              </button>
             </div>
             <table className="w-full text-sm">
               <thead>
@@ -75,7 +93,7 @@ export default function OrderDetailPage() {
                   <th className="px-4 py-3 text-right font-medium">Qty</th>
                   <th className="px-4 py-3 text-right font-medium">Shipped</th>
                   <th className="px-4 py-3 text-right font-medium">Subtotal</th>
-                  <th className="px-4 py-3 w-10"></th>
+                  <th className="px-4 py-3 w-20"></th>
                 </tr>
               </thead>
               <tbody>
@@ -91,7 +109,14 @@ export default function OrderDetailPage() {
                         item.price && item.quantity ? item.price * item.quantity : null
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 flex gap-1 justify-end">
+                      <button
+                        onClick={() => setEditingItem(item)}
+                        className="text-gray-500 hover:text-gray-700"
+                        title="Edit item"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
                       <button
                         onClick={() => deleteItem.mutate(item.item_id)}
                         className="text-red-500 hover:text-red-700"
@@ -112,6 +137,25 @@ export default function OrderDetailPage() {
               </tbody>
             </table>
           </div>
+
+          <OrderForm
+            open={showEditForm}
+            onClose={() => setShowEditForm(false)}
+            order={order}
+          />
+
+          <OrderItemForm
+            open={showAddItem}
+            onClose={() => setShowAddItem(false)}
+            orderId={id}
+          />
+
+          <OrderItemForm
+            open={!!editingItem}
+            onClose={() => setEditingItem(undefined)}
+            orderId={id}
+            item={editingItem}
+          />
 
           <ConfirmDialog
             open={showDeleteConfirm}

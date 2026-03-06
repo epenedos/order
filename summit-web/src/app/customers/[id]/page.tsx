@@ -1,8 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useCustomer } from "@/hooks/useCustomers";
+import { Pencil, Trash2 } from "lucide-react";
+import { useCustomer, useDeleteCustomer } from "@/hooks/useCustomers";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { CustomerForm } from "@/components/customers/CustomerForm";
 import { formatDate } from "@/lib/utils";
 
 export default function CustomerDetailPage() {
@@ -10,6 +14,9 @@ export default function CustomerDetailPage() {
   const router = useRouter();
   const id = Number(params.id);
   const { data: customer, isLoading } = useCustomer(id);
+  const deleteCustomer = useDeleteCustomer();
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   if (isLoading) return <LoadingSpinner />;
   if (!customer) return <p>Customer not found.</p>;
@@ -18,12 +25,26 @@ export default function CustomerDetailPage() {
     <div className="max-w-4xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">{customer.name}</h1>
-        <button
-          onClick={() => router.push(`/customers/${id}/orders`)}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90"
-        >
-          View Orders
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowEditForm(true)}
+            className="flex items-center gap-1 px-3 py-2 text-sm border rounded-md hover:bg-gray-50"
+          >
+            <Pencil className="h-4 w-4" /> Edit
+          </button>
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            className="flex items-center gap-1 px-3 py-2 text-sm text-red-600 border border-red-200 rounded-md hover:bg-red-50"
+          >
+            <Trash2 className="h-4 w-4" /> Delete
+          </button>
+          <button
+            onClick={() => router.push(`/customers/${id}/orders`)}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm hover:bg-primary/90"
+          >
+            View Orders
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -55,6 +76,25 @@ export default function CustomerDetailPage() {
           )}
         </div>
       </div>
+
+      <CustomerForm
+        open={showEditForm}
+        onClose={() => setShowEditForm(false)}
+        customer={customer}
+      />
+
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Delete Customer"
+        message={`Are you sure you want to delete "${customer.name}"? This action cannot be undone.`}
+        variant="destructive"
+        confirmLabel="Delete"
+        onConfirm={async () => {
+          await deleteCustomer.mutateAsync(id);
+          router.push("/customers");
+        }}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }
