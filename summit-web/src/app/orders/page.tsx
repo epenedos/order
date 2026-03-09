@@ -23,6 +23,11 @@ const columns: ColumnDef<Order, unknown>[] = [
     cell: ({ getValue }) => formatDate(getValue() as string | null),
   },
   {
+    accessorKey: "date_shipped",
+    header: "Date Filled",
+    cell: ({ getValue }) => formatDate(getValue() as string | null),
+  },
+  {
     accessorKey: "total",
     header: "Total",
     cell: ({ getValue }) => formatCurrency(getValue() as number | null),
